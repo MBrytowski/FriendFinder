@@ -6,45 +6,41 @@ module.exports = function (app) {
     });
 
     app.post("/api/friends", function (req, res) {
-        //who is the best match, var best match as an object (name, photo, difference) - starts empty
-        // var bestMatch = {
-        //     name: '',
-        //     photo: '',
-        //     friendDifference: Infinity
-        // };
-        // //set var to work with data
+        
+        var bestMatch = {
+            name: '',
+            photo: '',
+            friendDifference: Infinity
+        };
+        
         var newFriend = req.body;
-        // var newFriendScores = newFriend.scores;
-        // var scoreDifference = 0;
-        // //loop through friends and loop through scores (multi loops)
-        // for (var i = 0; i < friendsData.length; i++) {
-        //     var currentFriend = friendsData[i];
-        //     let currentFriendScores = friendsData[i].scores
-        //     // bestMatch.push(currentFriend);
-        //     for (var j = 0; j < currentFriend.scores.length; j++) {
-        //         const reducer = (accumulator, currentValue) => accumulator + currentValue;
+        var newFriendScores = newFriend.scores;
 
-        //         let newFriendTotal = newFriendScores.reduce(reducer);
-        //         console.log("New Friend Total: " + newFriendTotal);
+        var newFriendTotalScore = newFriendScores.reduce(function (num1, num2) {
+            return parseInt(num1) + parseInt(num2);
+        });
+        
+        var scoreDifference = 0;
+        
+        for (var i = 0; i < friendsData.length; i++) {
+            var currentFriend = friendsData[i];
+            let currentFriendScores = friendsData[i].scores;
 
-        //         let currentFriendTotal = currentFriendScores.reduce(reducer);
-        //         console.log("Current Friend Total: " + currentFriendTotal);
-                
-        //         scoreDifference = Math.abs(newFriendTotal - currentFriendTotal);
-        //         if (scoreDifference < bestMatch.friendDifference) {
-        //             bestMatch.push(currentFriend);
-        //         } else {
-        //             return bestMatch;
-        //         }
-        //     }
-        // }
-        // console.log("Best Match: ", bestMatch);
+            const reducer = (accumulator, currentValue) => parseInt(accumulator) + parseInt(currentValue);
 
-        //define var outside loop = difference in scores - change value of difference var
+            let currentFriendTotal = currentFriendScores.reduce(reducer);
 
-        //inner loop checks between current friend scores and new friend scores
-        //
+            scoreDifference = Math.abs(newFriendTotalScore - currentFriendTotal);
+
+            if (scoreDifference < bestMatch.friendDifference) {
+                bestMatch.name = currentFriend.name;
+                bestMatch.photo = currentFriend.photo;
+                bestMatch.friendDifference = scoreDifference;
+            };
+
+        };
+
         friendsData.push(req.body);
-        return res.json(newFriend);
+        res.json(bestMatch);
     });
 };
